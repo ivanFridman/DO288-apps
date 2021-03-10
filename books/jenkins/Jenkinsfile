@@ -52,18 +52,22 @@ pipeline {
         stage('Launch new app in DEV env') {
             steps {
                 echo '### Cleaning existing resources in DEV env ###'
-                sh '''
-                        
- 			oc project ${DEV_PROJECT}
-			oc new-app --as-deployment-config --name books nodejs:12~${APP_GIT_URL} \
-			--build-env npm_config_registry=${NEXUS_SERVER} \
-			--context-dir ${APP_NAME}
-			oc expose svc/${APP_NAME}
-
-                   '''
-
+                sh '''                
+                    oc project ${DEV_PROJECT}                                        
+                    oc delete all -l app=${APP_NAME}                                                       
+                    sleep 5                                                                                        
+                '''
                 echo '### Creating a new app in DEV env ###'
                 //TODO: Create a new app and expose the service
+                sh '''
+                        
+         			oc project ${DEV_PROJECT}
+			        oc new-app --as-deployment-config --name books nodejs:12~${APP_GIT_URL} \
+			        --build-env npm_config_registry=${NEXUS_SERVER} \
+			        --context-dir ${APP_NAME}
+			        oc expose svc/${APP_NAME}
+
+                   '''
             }
         }
 
